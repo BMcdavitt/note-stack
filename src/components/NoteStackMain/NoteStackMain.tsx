@@ -1,17 +1,27 @@
 import { Card, Flex } from "antd";
+import { useNavigate } from "react-router-dom";
+import { NotebooksData } from "../data";
 
 const NoteStackMain = () => {
-  const Notebooks = [
-    { title: "Notebook 1", description: "My Work Notebook" },
-    { title: "Notebook 2", description: "My Quick Notebook" },
-    { title: "Notebook 3", description: "Random Ideas" },
-    { title: "Dreams", description: "My Dreams Notebook" },
-  ];
+  const navigate = useNavigate();
+  const handleCardClick = (id: number) => {
+    navigate(`/notebook/${id}`);
+  };
+
+  const Notebooks = NotebooksData;
+
   return (
     <Flex wrap="wrap" gap={10}>
-      {Notebooks.map((notebook) => {
+      {Notebooks.map((notebook, index) => {
         return (
-          <Card title={notebook.title} style={{ width: 500 }}>
+          <Card
+            title={notebook.title}
+            style={{ width: 500 }}
+            onClick={() => {
+              handleCardClick(notebook.id);
+            }}
+            key={index}
+          >
             {notebook.description}
           </Card>
         );
