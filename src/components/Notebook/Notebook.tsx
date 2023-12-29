@@ -1,51 +1,51 @@
-import { useParams } from "react-router-dom";
-import { NotebookChapters, INotebookChapter } from "../data";
-import Tree, { DataNode } from "antd/es/tree";
+import { useParams } from 'react-router-dom'
+import { NotebookChapters, INotebookChapter } from '../data'
+import Tree, { DataNode } from 'antd/es/tree'
 
 const Notebook = () => {
   const getChaptersForNotebook = (notebookId?: number) => {
-    const chapters = NotebookChapters.filter((chapter) => chapter.notebookId === notebookId);
-    return chapters;
-  };
+    const chapters = NotebookChapters.filter((chapter) => chapter.notebookId === notebookId)
+    return chapters
+  }
 
-  const { notebookId } = useParams();
+  const { notebookId } = useParams()
 
-  const Chapters = getChaptersForNotebook(notebookId ? parseInt(notebookId) : undefined);
+  const Chapters = getChaptersForNotebook(notebookId ? parseInt(notebookId) : undefined)
 
   // Function to generate tree data recursively
 
-  function generateTree(chapters: (INotebookChapter | undefined)[], parentId: number | null = null) {
-    const nodes = [];
+  function generateTree(chapters: (INotebookChapter | undefined)[]) {
+    const nodes = []
 
     for (const chapter of chapters) {
-      if (chapter && chapter.parentChapter === parentId) {
+      if (chapter) {
         const node: DataNode = {
           title: chapter.title,
           key: `node-${chapter.id}`,
-        };
+        }
 
         if (chapter.childChapters.length) {
           const mappedChildChapters = chapter.childChapters.map((chapter) => {
-            return NotebookChapters.find((notebookChapter) => notebookChapter.id === chapter);
-          });
+            return NotebookChapters.find((notebookChapter) => notebookChapter.id === chapter)
+          })
 
-          const childChapters = generateTree(mappedChildChapters, chapter.id);
+          const childChapters = generateTree(mappedChildChapters)
           if (childChapters.length) {
-            node.children = childChapters;
+            node.children = childChapters
           }
         }
 
-        nodes.push(node);
+        nodes.push(node)
       }
     }
 
-    return nodes;
+    return nodes
   }
 
   // Call the function with the provided NotebookChapters
-  const chapterData: DataNode[] = generateTree(Chapters);
+  const chapterData: DataNode[] = generateTree(Chapters)
 
-  return <Tree treeData={chapterData} />;
-};
+  return <Tree treeData={chapterData} />
+}
 
-export default Notebook;
+export default Notebook
