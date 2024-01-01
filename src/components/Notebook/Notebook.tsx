@@ -4,7 +4,7 @@ import Page from './Page/Page'
 
 const Notebook = () => {
   return (
-    <Row gutter={[16, 16]} style={{ margin: '1vh' }}>
+    <Row wrap={false} gutter={[16, 16]} style={{ margin: '1vh' }}>
       <Col flex="250px">
         <Chapters />
       </Col>

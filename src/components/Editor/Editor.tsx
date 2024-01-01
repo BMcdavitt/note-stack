@@ -1,7 +1,5 @@
 //  Base Type Script Implementation courtesy of https://github.com/Sithija97/Lexical-rich-text-editor-typescript-
 
-import React, { useState } from 'react'
-
 import ExampleTheme from './themes/ExampleTheme'
 import { LexicalComposer } from '@lexical/react/LexicalComposer'
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin'
@@ -23,7 +21,7 @@ import AutoLinkPlugin from './plugins/AutoLinkPlugin'
 import './index.css'
 
 function Placeholder() {
-  return <div className="editor-placeholder">Enter some rich text...</div>
+  return <div className="editor-placeholder">Enter some text for this page...</div>
 }
 
 const editorConfig = {
