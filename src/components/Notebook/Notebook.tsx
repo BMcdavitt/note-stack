@@ -1,5 +1,6 @@
 import { Col, Row } from 'antd'
 import Chapters from './Chapters/Chapters'
+import Page from './Page/Page'
 
 const Notebook = () => {
   return (
@@ -8,7 +9,7 @@ const Notebook = () => {
         <Chapters />
       </Col>
       <Col flex="auto">
-        <Chapters />
+        <Page />
       </Col>
     </Row>
   )
