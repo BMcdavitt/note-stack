@@ -11,7 +11,7 @@ const NoteStackMain = () => {
   const Notebooks = NotebooksData
 
   return (
-    <Flex wrap="wrap" gap={'middle'}>
+    <Flex wrap="wrap" gap={'middle'} justify="center">
       {Notebooks.map((notebook, index) => {
         return (
           <Card
