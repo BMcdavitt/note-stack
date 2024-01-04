@@ -19,12 +19,17 @@ import ToolbarPlugin from './plugins/ToolbarPlugin'
 import AutoLinkPlugin from './plugins/AutoLinkPlugin'
 
 import './index.css'
+import { useState } from 'react'
+import OnChangePlugin from './plugins/OnChangePlugin'
+import { EditorState } from 'lexical'
 
 function Placeholder() {
   return <div className="editor-placeholder">Enter some text for this page...</div>
 }
 
 const editorConfig = {
+  // ***I can default a value into the editor this way on load
+  // editorState: localStorage.getItem('editorText'),
   namespace: 'MyEditor',
   // The editor theme
   theme: ExampleTheme,
@@ -49,6 +54,18 @@ const editorConfig = {
 }
 
 const Editor = () => {
+  const [editorState, setEditorState] = useState<string>()
+
+  function onChange(editorState: EditorState) {
+    const editorStateJSON = editorState.toJSON()
+    setEditorState(JSON.stringify(editorStateJSON))
+  }
+
+  // *** Put into local storage
+  if (editorState) {
+    localStorage.setItem('editorText', editorState)
+  }
+
   return (
     <LexicalComposer initialConfig={editorConfig}>
       <div className="editor-container">
@@ -70,6 +87,7 @@ const Editor = () => {
           <LinkPlugin />
         </div>
       </div>
+      <OnChangePlugin onChange={onChange} />
     </LexicalComposer>
   )
 }
