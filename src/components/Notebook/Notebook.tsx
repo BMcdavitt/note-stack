@@ -1,24 +1,25 @@
-import { Col, Row, Layout } from 'antd'
+import { Layout } from 'antd'
 import Chapters from './Chapters/Chapters'
 import Page from './Page/Page'
 import PageHeader from './PageHeader/PageHeader'
 
+const { Header, Sider, Content } = Layout
+
 const Notebook = () => {
   return (
-    <Layout>
-      <Row>
-        <Col span={24}>
-          <PageHeader />
-        </Col>
-      </Row>
-      <Row wrap={false} gutter={[16, 16]} style={{ margin: '1vh' }}>
-        <Col flex="250px">
+    <Layout style={{ padding: '10px' }}>
+      <Header style={{ backgroundColor: '#fff', borderRadius: '15px', height: '10vh', padding: 0 }}>
+        <PageHeader />
+      </Header>
+      <Layout style={{ paddingTop: '10px' }}>
+        <Sider style={{ borderRadius: '15px', marginRight: '10px' }}>
           <Chapters />
-        </Col>
-        <Col flex="auto">
+        </Sider>
+
+        <Content>
           <Page />
-        </Col>
-      </Row>
+        </Content>
+      </Layout>
     </Layout>
   )
 }

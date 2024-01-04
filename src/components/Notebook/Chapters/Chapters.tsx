@@ -45,7 +45,7 @@ const Chapters = () => {
   // Call the function with the provided NotebookChapters
   const chapterData: DataNode[] = generateTree(Chapters)
 
-  return <Tree treeData={chapterData} style={{ minHeight: '86vh' }} />
+  return <Tree treeData={chapterData} style={{ minHeight: '87vh' }} />
 }
 
 export default Chapters
