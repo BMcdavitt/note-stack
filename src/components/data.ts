@@ -7,7 +7,7 @@ interface INotebooksData {
 export interface INotebookChapter {
   id: number
   title: string
-  notes?: string
+  notes?: {}
   childChapters: number[]
   notebookId?: number | null
 }
@@ -22,8 +22,84 @@ export const NotebooksData: INotebooksData[] = [
 export const NotebookChapters: INotebookChapter[] = [
   { id: 1, title: '2023', notes: undefined, childChapters: [2], notebookId: 1 },
   { id: 2, title: 'December', notes: undefined, childChapters: [3, 4] },
-  { id: 3, title: '28', notes: undefined, childChapters: [17, 18] },
-  { id: 4, title: '29', notes: undefined, childChapters: [19] },
+  {
+    id: 3,
+    title: '28',
+    notes: {
+      root: {
+        children: [
+          {
+            children: [
+              { detail: 0, format: 0, mode: 'normal', style: '', text: "Let's test", type: 'text', version: 1 },
+            ],
+            direction: 'ltr',
+            format: '',
+            indent: 0,
+            type: 'paragraph',
+            version: 1,
+          },
+          {
+            children: [
+              {
+                detail: 0,
+                format: 0,
+                mode: 'normal',
+                style: '',
+                text: 'With some Real Text',
+                type: 'text',
+                version: 1,
+              },
+            ],
+            direction: 'ltr',
+            format: '',
+            indent: 0,
+            type: 'paragraph',
+            version: 1,
+          },
+        ],
+        direction: 'ltr',
+        format: '',
+        indent: 0,
+        type: 'root',
+        version: 1,
+      },
+    },
+    childChapters: [17, 18],
+  },
+  {
+    id: 4,
+    title: '29',
+    notes: {
+      root: {
+        children: [
+          {
+            children: [
+              {
+                detail: 0,
+                format: 0,
+                mode: 'normal',
+                style: '',
+                text: 'For the love of everything',
+                type: 'text',
+                version: 1,
+              },
+            ],
+            direction: 'ltr',
+            format: '',
+            indent: 0,
+            type: 'paragraph',
+            version: 1,
+          },
+        ],
+        direction: 'ltr',
+        format: '',
+        indent: 0,
+        type: 'root',
+        version: 1,
+      },
+    },
+    childChapters: [19],
+  },
   { id: 5, title: '2024', notes: undefined, childChapters: [6], notebookId: 1 },
   { id: 6, title: 'January', notes: undefined, childChapters: [7, 8] },
   { id: 7, title: '1', notes: undefined, childChapters: [] },
