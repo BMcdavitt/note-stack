@@ -1,8 +1,11 @@
 import { useParams } from 'react-router-dom'
 import { NotebookChapters, INotebookChapter } from '../../data'
 import Tree, { DataNode } from 'antd/es/tree'
+import { useDispatch } from 'react-redux'
 
 const Chapters = () => {
+  const dispatch = useDispatch()
+
   const getChaptersForNotebook = (notebookId?: number) => {
     const chapters = NotebookChapters.filter((chapter) => chapter.notebookId === notebookId)
     return chapters
@@ -45,7 +48,23 @@ const Chapters = () => {
   // Call the function with the provided NotebookChapters
   const chapterData: DataNode[] = generateTree(Chapters)
 
-  return <Tree treeData={chapterData} style={{ minHeight: '87vh' }} />
+  // TODO: Fix any
+  const handleChapterSelect = (nodeKey: React.Key[], info: any) => {
+    // const chapter = nodeKey.split('-')
+
+    const chapter = info.node.key.split('-')[1]
+    // dispatch(setCurrentNote)
+    console.log('chapter', chapter)
+  }
+  return (
+    <Tree
+      treeData={chapterData}
+      style={{ minHeight: '87vh' }}
+      onSelect={(nodeKey, info) => {
+        handleChapterSelect(nodeKey, info)
+      }}
+    />
+  )
 }
 
 export default Chapters
