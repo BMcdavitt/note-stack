@@ -1,14 +1,22 @@
 import { createSlice } from '@reduxjs/toolkit'
 
+export interface ICurrentNoteSlice {
+  id: Number | null
+  text: {}
+}
+
+const initialState: ICurrentNoteSlice = {
+  id: null,
+  text: {},
+}
+
 const currentNoteSlice = createSlice({
   name: 'currentNote',
-  initialState: {
-    id: null,
-    text: {},
-  },
+  initialState,
   reducers: {
     setCurrentNote: (state, action) => {
-      state.initialState.text = action.payload
+      state.id = action.payload.id
+      state.text = action.payload.text
     },
   },
 })

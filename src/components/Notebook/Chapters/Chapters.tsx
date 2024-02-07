@@ -2,6 +2,7 @@ import { useParams } from 'react-router-dom'
 import { NotebookChapters, INotebookChapter } from '../../data'
 import Tree, { DataNode } from 'antd/es/tree'
 import { useDispatch } from 'react-redux'
+import { setCurrentNote } from '../../../redux/currentNoteSlice'
 
 const Chapters = () => {
   const dispatch = useDispatch()
@@ -50,11 +51,12 @@ const Chapters = () => {
 
   // TODO: Fix any
   const handleChapterSelect = (nodeKey: React.Key[], info: any) => {
-    // const chapter = nodeKey.split('-')
+    const currentChapter = parseInt(info.node.key.split('-')[1])
+    const chapterData = NotebookChapters.find((chapter) => {
+      return chapter.id === currentChapter
+    })
 
-    const chapter = info.node.key.split('-')[1]
-    // dispatch(setCurrentNote)
-    console.log('chapter', chapter)
+    dispatch(setCurrentNote({ id: currentChapter, text: chapterData?.notes || {} }))
   }
   return (
     <Tree
