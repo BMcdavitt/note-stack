@@ -19,42 +19,53 @@ import ToolbarPlugin from './plugins/ToolbarPlugin'
 import AutoLinkPlugin from './plugins/AutoLinkPlugin'
 
 import './index.css'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import OnChangePlugin from './plugins/OnChangePlugin'
 import { EditorState } from 'lexical'
+import { useSelector } from 'react-redux'
+import { NotebookChapters, INotebookChapter } from '../data'
+import { selectCurrentNote } from '../../redux/currentNoteSlice'
 
 function Placeholder() {
   return <div className="editor-placeholder">Enter some text for this page...</div>
 }
 
-const editorConfig = {
-  // ***I can default a value into the editor this way on load
-  // editorState: localStorage.getItem('editorText'),
-  namespace: 'MyEditor',
-  // The editor theme
-  theme: ExampleTheme,
-  // Handling of errors during update
-  onError(error: any) {
-    throw error
-  },
-  // Any custom nodes go here
-  nodes: [
-    HeadingNode,
-    ListNode,
-    ListItemNode,
-    QuoteNode,
-    CodeNode,
-    CodeHighlightNode,
-    TableNode,
-    TableCellNode,
-    TableRowNode,
-    AutoLinkNode,
-    LinkNode,
-  ],
-}
-
 const Editor = () => {
   const [editorState, setEditorState] = useState<string>()
+  const noteId = useSelector(selectCurrentNote)
+  const editorConfig = {
+    // ***I can default a value into the editor this way on load
+    // editorState: localStorage.getItem('editorText'),
+    editorState: editorState ? JSON.parse(editorState) : null,
+    namespace: 'MyEditor',
+    // The editor theme
+    theme: ExampleTheme,
+    // Handling of errors during update
+    onError(error: any) {
+      throw error
+    },
+    // Any custom nodes go here
+    nodes: [
+      HeadingNode,
+      ListNode,
+      ListItemNode,
+      QuoteNode,
+      CodeNode,
+      CodeHighlightNode,
+      TableNode,
+      TableCellNode,
+      TableRowNode,
+      AutoLinkNode,
+      LinkNode,
+    ],
+  }
+
+  console.log('editorConfig', editorConfig)
+
+  useEffect(() => {
+    const noteRecord = NotebookChapters.find((obj) => obj.id === noteId)
+    noteRecord?.notes && setEditorState(JSON.stringify(noteRecord.notes))
+  }, [noteId])
 
   function onChange(editorState: EditorState) {
     const editorStateJSON = editorState.toJSON()
