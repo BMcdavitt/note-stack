@@ -21,64 +21,62 @@ import AutoLinkPlugin from './plugins/AutoLinkPlugin'
 import './index.css'
 import { useEffect, useState } from 'react'
 import OnChangePlugin from './plugins/OnChangePlugin'
-import { EditorState } from 'lexical'
+import { EditorState, SerializedEditorState } from 'lexical'
 import { useSelector } from 'react-redux'
-import { NotebookChapters, INotebookChapter } from '../data'
+import { NotebookChapters } from '../data'
 import { selectCurrentNote } from '../../redux/currentNoteSlice'
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 
 function Placeholder() {
   return <div className="editor-placeholder">Enter some text for this page...</div>
 }
 
-const Editor = () => {
-  const [editorState, setEditorState] = useState<string>()
-  const noteId = useSelector(selectCurrentNote)
-  const editorConfig = {
-    // ***I can default a value into the editor this way on load
-    // editorState: localStorage.getItem('editorText'),
-    editorState: editorState ? JSON.parse(editorState) : null,
-    namespace: 'MyEditor',
-    // The editor theme
-    theme: ExampleTheme,
-    // Handling of errors during update
-    onError(error: any) {
-      throw error
-    },
-    // Any custom nodes go here
-    nodes: [
-      HeadingNode,
-      ListNode,
-      ListItemNode,
-      QuoteNode,
-      CodeNode,
-      CodeHighlightNode,
-      TableNode,
-      TableCellNode,
-      TableRowNode,
-      AutoLinkNode,
-      LinkNode,
-    ],
-  }
+const editorConfig = {
+  editorState: null,
+  namespace: 'MyEditor',
+  theme: ExampleTheme,
+  onError(error: any) {
+    throw error
+  },
+  nodes: [
+    HeadingNode,
+    ListNode,
+    ListItemNode,
+    QuoteNode,
+    CodeNode,
+    CodeHighlightNode,
+    TableNode,
+    TableCellNode,
+    TableRowNode,
+    AutoLinkNode,
+    LinkNode,
+  ],
+}
 
-  console.log('editorConfig', editorConfig)
+const EditorContent = () => {
+  const [editor] = useLexicalComposerContext()
+  const [editorState, setEditorState] = useState<string>()
+
+  const noteId = useSelector(selectCurrentNote)
 
   useEffect(() => {
     const noteRecord = NotebookChapters.find((obj) => obj.id === noteId)
-    noteRecord?.notes && setEditorState(JSON.stringify(noteRecord.notes))
-  }, [noteId])
+    if (noteRecord?.notes) {
+      editor.update(() => {
+        const editorState = editor.parseEditorState(noteRecord.notes as SerializedEditorState)
+        editor.setEditorState(editorState)
+      })
+    }
+  }, [noteId, editor])
 
-  function onChange(editorState: EditorState) {
-    const editorStateJSON = editorState.toJSON()
+  function onChange(editorContent: EditorState) {
+    const editorStateJSON = editorContent.toJSON()
     setEditorState(JSON.stringify(editorStateJSON))
-  }
-
-  // *** Put into local storage
-  if (editorState) {
-    localStorage.setItem('editorText', editorState)
+    // TODO: Update the redux store with the new editor state
   }
 
   return (
-    <LexicalComposer initialConfig={editorConfig}>
+    <div>
       <div className="editor-container">
         <ToolbarPlugin />
         <div className="editor-inner">
@@ -99,6 +97,14 @@ const Editor = () => {
         </div>
       </div>
       <OnChangePlugin onChange={onChange} />
+    </div>
+  )
+}
+
+const Editor = () => {
+  return (
+    <LexicalComposer initialConfig={editorConfig}>
+      <EditorContent />
     </LexicalComposer>
   )
 }

@@ -1,3 +1,5 @@
+import { SerializedEditorState } from 'lexical'
+
 interface INotebooksData {
   id: number
   title: string
@@ -7,7 +9,7 @@ interface INotebooksData {
 export interface INotebookChapter {
   id: number
   title: string
-  notes?: {}
+  notes?: SerializedEditorState | {} | null
   childChapters: number[]
   notebookId?: number | null
 }

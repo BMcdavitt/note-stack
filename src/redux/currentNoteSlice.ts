@@ -24,7 +24,7 @@ const currentNoteSlice = createSlice({
   },
 })
 
-export const { setCurrentNote } = currentNoteSlice.actions
+export const { setCurrentNote, setCurrentNoteText } = currentNoteSlice.actions
 export default currentNoteSlice.reducer
 
 export const selectCurrentNote = (state: RootState) => state.currentNote.id
