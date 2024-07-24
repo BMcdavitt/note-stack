@@ -21,7 +21,7 @@ import AutoLinkPlugin from './plugins/AutoLinkPlugin'
 import './index.css'
 import { useEffect, useState } from 'react'
 import OnChangePlugin from './plugins/OnChangePlugin'
-import { EditorState, SerializedEditorState } from 'lexical'
+import { $getRoot, EditorState, SerializedEditorState } from 'lexical'
 import { useSelector } from 'react-redux'
 import { NotebookChapters } from '../data'
 import { selectCurrentNote } from '../../redux/currentNoteSlice'
@@ -65,6 +65,10 @@ const EditorContent = () => {
       editor.update(() => {
         const editorState = editor.parseEditorState(noteRecord.notes as SerializedEditorState)
         editor.setEditorState(editorState)
+      })
+    } else {
+      editor.update(() => {
+        $getRoot().clear()
       })
     }
   }, [noteId, editor])
