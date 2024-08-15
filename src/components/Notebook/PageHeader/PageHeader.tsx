@@ -10,8 +10,6 @@ const PageHeader = () => {
     return NotebookData.id === (notebookId && parseInt(notebookId))
   })
 
-  console.log('foundNotebookData', foundNotebookData)
-
   return (
     // <Card style={{ margin: '10px 15px 0 15px', height: '10vh' }}>
     <Typography>{`${foundNotebookData?.title} - ${foundNotebookData?.description}`}</Typography>
