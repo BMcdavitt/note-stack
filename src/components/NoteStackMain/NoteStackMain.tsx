@@ -1,6 +1,9 @@
 import { Card, Flex } from 'antd'
 import { useNavigate } from 'react-router-dom'
-import { NotebooksData } from '../data'
+import { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchNotebooks, INotebook, listNotebooks } from '../../redux/notebooksSlice'
+import { Dispatch } from '@reduxjs/toolkit'
 
 const NoteStackMain = () => {
   const navigate = useNavigate()
@@ -8,11 +11,16 @@ const NoteStackMain = () => {
     navigate(`/notebook/${id}`)
   }
 
-  const Notebooks = NotebooksData
+  const dispatch = useDispatch<Dispatch<any>>()
+  const Notebooks = useSelector(listNotebooks)
+
+  useEffect(() => {
+    dispatch(fetchNotebooks())
+  }, [dispatch])
 
   return (
     <Flex wrap="wrap" gap={'middle'} justify="center">
-      {Notebooks.map((notebook, index) => {
+      {Notebooks.map((notebook: INotebook, index: number) => {
         return (
           <Card
             title={notebook.title}
