@@ -36,7 +36,6 @@ const currentNotebooksSlice = createSlice({
 
   extraReducers: (builder) => {
     builder.addCase(fetchNotebooks.fulfilled, (state, action) => {
-      // @ts-ignore
       state.notebooks = action.payload.data
     })
   },
@@ -45,3 +44,6 @@ const currentNotebooksSlice = createSlice({
 export default currentNotebooksSlice.reducer
 
 export const listNotebooks = (state: any) => state.notebooks.notebooks
+export const getNotebookById = (state: any, notebookId: number) => {
+  return state.notebooks.notebooks.find((notebook: INotebook) => notebook.id === notebookId)
+}

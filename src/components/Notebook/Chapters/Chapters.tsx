@@ -1,62 +1,63 @@
-import { useParams } from 'react-router-dom'
-import { NotebookChapters, INotebookChapter } from '../../data'
 import Tree, { DataNode } from 'antd/es/tree'
-import { useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { setCurrentNoteText, setCurrentNote } from '../../../redux/currentNoteSlice'
+import { currentNotebookChapters, IChapter } from '../../../redux/currentNotebook'
 
 const Chapters = () => {
-  const dispatch = useDispatch()
+  const chapters = useSelector(currentNotebookChapters)
 
-  const getChaptersForNotebook = (notebookId?: number) => {
-    const chapters = NotebookChapters.filter((chapter) => chapter.notebookId === notebookId)
-    return chapters
-  }
+  function generateTreeChildNode(parentChapterId: number, parentNode: DataNode) {
+    parentNode.children = []
+    chapters
+      .filter((chapter: IChapter) => chapter.parentNotebookChapterId === parentChapterId)
+      .forEach((chapter: IChapter) => {
+        if (chapter) {
+          const node: DataNode = {
+            title: chapter.title,
+            key: `node-${chapter.id}`,
+          }
+          parentNode.children && parentNode.children.push(node)
 
-  const { notebookId } = useParams()
-
-  const Chapters = getChaptersForNotebook(notebookId ? parseInt(notebookId) : undefined)
-
-  // Function to generate tree data recursively
-
-  function generateTree(chapters: (INotebookChapter | undefined)[]) {
-    const nodes = []
-
-    for (const chapter of chapters) {
-      if (chapter) {
-        const node: DataNode = {
-          title: chapter.title,
-          key: `node-${chapter.id}`,
-        }
-
-        if (chapter.childChapters.length) {
-          const mappedChildChapters = chapter.childChapters.map((chapter) => {
-            return NotebookChapters.find((notebookChapter) => notebookChapter.id === chapter)
-          })
-
-          const childChapters = generateTree(mappedChildChapters)
-          if (childChapters.length) {
-            node.children = childChapters
+          if (chapters.some((c: IChapter) => c.parentNotebookChapterId === chapter.id)) {
+            generateTreeChildNode(chapter.id, node)
           }
         }
+      })
+  }
 
-        nodes.push(node)
-      }
-    }
+  function generateTree() {
+    const nodes: DataNode[] = []
+
+    chapters
+      .filter((chapter: IChapter) => chapter.parentNotebookChapterId === null)
+      .forEach((chapter: IChapter) => {
+        if (chapter) {
+          const node: DataNode = {
+            title: chapter.title,
+            key: `node-${chapter.id}`,
+          }
+          if (chapters.some((c: IChapter) => c.parentNotebookChapterId === chapter.id)) {
+            generateTreeChildNode(chapter.id, node)
+          }
+
+          nodes.push(node)
+        }
+      })
 
     return nodes
   }
 
   // Call the function with the provided NotebookChapters
-  const chapterData: DataNode[] = generateTree(Chapters)
+  const chapterData: DataNode[] = generateTree()
 
   // TODO: Fix any
   const handleChapterSelect = (nodeKey: React.Key[], info: any) => {
-    const chapter = parseInt(info.node.key.split('-')[1])
-    dispatch(setCurrentNote(chapter))
-    const chapterNotes = NotebookChapters.find((ch) => ch.id === chapter)
-    if (chapterNotes) {
-      dispatch(setCurrentNoteText(chapterNotes.notes || null))
-    }
+    // const chapter = parseInt(info.node.key.split('-')[1])
+    // dispatch(setCurrentNote(chapter))
+    // const chapterNotes = NotebookChapters.find((ch) => ch.id === chapter)
+    // if (chapterNotes) {
+    //   dispatch(setCurrentNoteText(chapterNotes.notes || null))
+    // }
   }
   return (
     <Tree
