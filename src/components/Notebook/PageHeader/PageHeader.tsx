@@ -1,4 +1,3 @@
-import { useParams } from 'react-router-dom'
 import { Typography } from 'antd'
 import { useSelector } from 'react-redux'
 import { getNotebookById } from '../../../redux/notebooksSlice'
