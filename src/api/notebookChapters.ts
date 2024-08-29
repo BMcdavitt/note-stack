@@ -7,3 +7,9 @@ export const notebookChaptersApi = {
     return axios.get(url)
   },
 }
+
+export const updateNotebookChapterText = async (notebookChapterId: number, text: string) => {
+  const url = `${getNodeApiBaseUrl()}/notebookChapters/${notebookChapterId}`
+  const response = await axios.put(url, { notes: text })
+  return response.data
+}

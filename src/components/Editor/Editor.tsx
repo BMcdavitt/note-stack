@@ -27,6 +27,7 @@ import OnChangePlugin from './plugins/OnChangePlugin'
 
 import { selectCurrentNote, selectCurrentNoteText } from '../../redux/currentNoteSlice'
 import { setCurrentNotebookChapterNotes } from '../../redux/currentNotebook'
+import { updateNotebookChapterText } from '../../api/notebookChapters'
 
 function Placeholder() {
   return <div className="editor-placeholder">Enter some text for this page...</div>
@@ -73,11 +74,14 @@ const EditorContent = () => {
         $getRoot().clear()
       })
     }
+    return () => {}
   }, [editor, noteText, dispatch])
 
   function onChange(editorContent: EditorState) {
     const editorStateJSON = editorContent.toJSON()
     dispatch(setCurrentNotebookChapterNotes({ id: noteId, notes: JSON.stringify(editorStateJSON) }))
+    //  Is this happening too often? Should we debounce this?
+    noteId && updateNotebookChapterText(noteId, JSON.stringify(editorStateJSON))
   }
 
   return (
