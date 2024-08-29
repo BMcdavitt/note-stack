@@ -3,12 +3,12 @@ import { RootState } from './store'
 
 interface ICurrentNoteState {
   id: number | null
-  text: {}
+  text: string | null
 }
 
 const initialState: ICurrentNoteState = {
   id: null,
-  text: {},
+  text: null,
 }
 
 const currentNoteSlice = createSlice({

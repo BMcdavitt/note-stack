@@ -1,10 +1,12 @@
 import Tree, { DataNode } from 'antd/es/tree'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { Dispatch } from '@reduxjs/toolkit'
 import { setCurrentNoteText, setCurrentNote } from '../../../redux/currentNoteSlice'
-import { currentNotebookChapters, IChapter } from '../../../redux/currentNotebook'
+import { getCurrentNotebookChapters, IChapter } from '../../../redux/currentNotebook'
 
 const Chapters = () => {
-  const chapters = useSelector(currentNotebookChapters)
+  const chapters = useSelector(getCurrentNotebookChapters)
+  const dispatch = useDispatch<Dispatch<any>>()
 
   function generateTreeChildNode(parentChapterId: number, parentNode: DataNode) {
     parentNode.children = []
@@ -39,25 +41,26 @@ const Chapters = () => {
           if (chapters.some((c: IChapter) => c.parentNotebookChapterId === chapter.id)) {
             generateTreeChildNode(chapter.id, node)
           }
-
           nodes.push(node)
         }
       })
-
     return nodes
   }
 
-  // Call the function with the provided NotebookChapters
   const chapterData: DataNode[] = generateTree()
 
   // TODO: Fix any
   const handleChapterSelect = (nodeKey: React.Key[], info: any) => {
-    // const chapter = parseInt(info.node.key.split('-')[1])
-    // dispatch(setCurrentNote(chapter))
-    // const chapterNotes = NotebookChapters.find((ch) => ch.id === chapter)
-    // if (chapterNotes) {
-    //   dispatch(setCurrentNoteText(chapterNotes.notes || null))
-    // }
+    const chapter = parseInt(info.node.key.split('-')[1])
+    dispatch(setCurrentNote(chapter))
+    let chapterNotes = chapters.find((ch: IChapter) => ch.id === chapter)?.notes
+
+    if (!chapterNotes) {
+      // use of chapter in chapterNotes string is strictly to ensure a state change is detected so that the editor is re-rendered
+      // TODO: Verify if this is the best approach
+      chapterNotes = `{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1}],"direction":null,"format":"","indent":0,"type":"root","version":${chapter}}}`
+    }
+    dispatch(setCurrentNoteText(chapterNotes))
   }
   return (
     <Tree

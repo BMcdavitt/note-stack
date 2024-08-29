@@ -1,6 +1,12 @@
 //  Base Type Script Implementation courtesy of https://github.com/Sithija97/Lexical-rich-text-editor-typescript-
 
+import { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { Dispatch } from '@reduxjs/toolkit'
+
+import { $getRoot, EditorState } from 'lexical'
 import ExampleTheme from './themes/ExampleTheme'
+import './index.css'
 import { LexicalComposer } from '@lexical/react/LexicalComposer'
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin'
 import { ContentEditable } from '@lexical/react/LexicalContentEditable'
@@ -9,23 +15,18 @@ import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin'
 import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary'
 import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin'
 import { ListPlugin } from '@lexical/react/LexicalListPlugin'
-
 import { HeadingNode, QuoteNode } from '@lexical/rich-text'
 import { TableCellNode, TableNode, TableRowNode } from '@lexical/table'
 import { ListItemNode, ListNode } from '@lexical/list'
 import { CodeHighlightNode, CodeNode } from '@lexical/code'
 import { AutoLinkNode, LinkNode } from '@lexical/link'
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import ToolbarPlugin from './plugins/ToolbarPlugin'
 import AutoLinkPlugin from './plugins/AutoLinkPlugin'
-
-import './index.css'
-import { useEffect, useState } from 'react'
 import OnChangePlugin from './plugins/OnChangePlugin'
-import { $getRoot, EditorState, SerializedEditorState } from 'lexical'
-import { useSelector } from 'react-redux'
-import { NotebookChapters } from '../data'
-import { selectCurrentNote } from '../../redux/currentNoteSlice'
-import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
+
+import { selectCurrentNote, selectCurrentNoteText } from '../../redux/currentNoteSlice'
+import { setCurrentNotebookChapterNotes } from '../../redux/currentNotebook'
 
 function Placeholder() {
   return <div className="editor-placeholder">Enter some text for this page...</div>
@@ -55,15 +56,16 @@ const editorConfig = {
 
 const EditorContent = () => {
   const [editor] = useLexicalComposerContext()
-  const [editorState, setEditorState] = useState<string>()
+
+  const dispatch = useDispatch<Dispatch<any>>()
 
   const noteId = useSelector(selectCurrentNote)
+  const noteText = useSelector(selectCurrentNoteText)
 
   useEffect(() => {
-    const noteRecord = NotebookChapters.find((obj) => obj.id === noteId)
-    if (noteRecord?.notes) {
+    if (noteText && noteText !== '{}') {
       editor.update(() => {
-        const editorState = editor.parseEditorState(noteRecord.notes as SerializedEditorState)
+        const editorState = editor.parseEditorState(JSON.parse(noteText))
         editor.setEditorState(editorState)
       })
     } else {
@@ -71,12 +73,11 @@ const EditorContent = () => {
         $getRoot().clear()
       })
     }
-  }, [noteId, editor])
+  }, [editor, noteText, dispatch])
 
   function onChange(editorContent: EditorState) {
     const editorStateJSON = editorContent.toJSON()
-    setEditorState(JSON.stringify(editorStateJSON))
-    // TODO: Update the redux store with the new editor state
+    dispatch(setCurrentNotebookChapterNotes({ id: noteId, notes: JSON.stringify(editorStateJSON) }))
   }
 
   return (

@@ -32,12 +32,18 @@ const initialState: IChapterState = {
   chapters: [],
 }
 
-const currentNotebookChaptersSlice = createSlice({
+const currentNotebookSlice = createSlice({
   name: 'currentNotebook',
   initialState,
   reducers: {
     setCurrentNotebookId(state, action) {
       state.notebookId = action.payload
+    },
+    setCurrentNotebookChapterNotes(state, action) {
+      const chapter = state.chapters.find((c) => c.id === action.payload.id)
+      if (chapter) {
+        chapter.notes = action.payload.notes
+      }
     },
   },
 
@@ -48,8 +54,12 @@ const currentNotebookChaptersSlice = createSlice({
   },
 })
 
-export const { setCurrentNotebookId } = currentNotebookChaptersSlice.actions
-export default currentNotebookChaptersSlice.reducer
+export const { setCurrentNotebookId, setCurrentNotebookChapterNotes } = currentNotebookSlice.actions
+export default currentNotebookSlice.reducer
 
-export const currentNotebookChapters = (state: any) => state.currentNotebook.chapters
+export const getCurrentNotebookChapters = (state: any) => state.currentNotebook.chapters
 export const getCurrentNotebookId = (state: any) => state.currentNotebook.notebookId
+export const getCurrentNotebookChapterNote = (state: any, chapterId: number) => {
+  const chapter = state.currentNotebook.chapters.find((c: IChapter) => c.id === chapterId)
+  return chapter ? chapter.notes : ''
+}
