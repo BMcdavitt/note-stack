@@ -1,22 +1,16 @@
-import { Button, Card, Flex, Input, Modal } from 'antd'
-import { useNavigate } from 'react-router-dom'
+import { Button, Flex } from 'antd'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchNotebooks, INotebook, listNotebooks } from '../../redux/notebooksSlice'
 import { Dispatch } from '@reduxjs/toolkit'
 import Layout, { Content, Header } from 'antd/es/layout/layout'
 import { notebookApi } from '../../api/notebook'
+import NotebookCard from './NotebookCard'
+import AddNotebookModal from './AddNotebook'
 
 const NoteStackMain = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [newNotebookTitle, setNewNotebookTitle] = useState('')
-  const [newNotebookDescription, setNewNotebookDescription] = useState('')
+  const [isNewNotebookModalOpen, setIsNewNotebookModalOpen] = useState(false)
   const [newNotebookFlag, setNewNotebookFlag] = useState(0)
-
-  const navigate = useNavigate()
-  const handleCardClick = (id: number) => {
-    navigate(`/notebook/${id}`)
-  }
 
   const dispatch = useDispatch<Dispatch<any>>()
   const Notebooks = useSelector(listNotebooks)
@@ -26,17 +20,17 @@ const NoteStackMain = () => {
   }, [dispatch, newNotebookFlag])
 
   const showModal = () => {
-    setIsModalOpen(true)
+    setIsNewNotebookModalOpen(true)
   }
 
-  const handleOk = () => {
+  const handleSave = (newNotebookTitle: string, newNotebookDescription: string) => {
     notebookApi.createNotebook(newNotebookTitle, newNotebookDescription)
     setNewNotebookFlag(newNotebookFlag + 1)
-    setIsModalOpen(false)
+    setIsNewNotebookModalOpen(false)
   }
 
   const handleCancel = () => {
-    setIsModalOpen(false)
+    setIsNewNotebookModalOpen(false)
   }
 
   return (
@@ -60,41 +54,12 @@ const NoteStackMain = () => {
         <Content style={{ backgroundColor: '#fff', borderRadius: '15px', height: '85vh', padding: '20px' }}>
           <Flex wrap="wrap" gap={'middle'} justify="center">
             {Notebooks.map((notebook: INotebook, index: number) => {
-              return (
-                <Card
-                  title={notebook.title}
-                  style={{ width: 500, backgroundColor: '#f0f0f0' }}
-                  onClick={() => {
-                    handleCardClick(notebook.id)
-                  }}
-                  key={index}
-                >
-                  {notebook.description}
-                </Card>
-              )
+              return <NotebookCard notebook={notebook} key={index} />
             })}
           </Flex>
         </Content>
       </Layout>
-      <Modal open={isModalOpen} onCancel={handleCancel} onOk={handleOk}>
-        <p>Add New Notebook</p>
-        <div style={{ display: 'flex', gap: '15px', flexDirection: 'column' }}>
-          <Input
-            placeholder="Title"
-            value={newNotebookTitle}
-            onChange={(e) => {
-              setNewNotebookTitle(e.target.value)
-            }}
-          />
-          <Input
-            placeholder="Description"
-            value={newNotebookDescription}
-            onChange={(e) => {
-              setNewNotebookDescription(e.target.value)
-            }}
-          />
-        </div>
-      </Modal>
+      <AddNotebookModal isOpen={isNewNotebookModalOpen} onClose={handleCancel} onSave={handleSave} />
     </>
   )
 }
