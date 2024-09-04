@@ -6,4 +6,8 @@ export const notebookApi = {
     const url = `${getNodeApiBaseUrl()}/notebook`
     return axios.get(url)
   },
+  createNotebook(title: string, description: string) {
+    const url = `${getNodeApiBaseUrl()}/notebook`
+    return axios.post(url, { title, description })
+  },
 }
