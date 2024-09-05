@@ -6,6 +6,7 @@ import { Dispatch } from '@reduxjs/toolkit'
 import Layout, { Content, Header } from 'antd/es/layout/layout'
 import NotebookCard from './NotebookCard'
 import AddNotebookModal from './AddNotebook'
+import { setCurrentNote, setCurrentNoteText } from '../../redux/currentNoteSlice'
 
 const NoteStackMain = () => {
   const [isNewNotebookModalOpen, setIsNewNotebookModalOpen] = useState(false)
@@ -15,6 +16,8 @@ const NoteStackMain = () => {
 
   useEffect(() => {
     dispatch(fetchNotebooks())
+    dispatch(setCurrentNote(null))
+    dispatch(setCurrentNoteText([]))
   }, [dispatch])
 
   const showNewNotebookModal = () => {
