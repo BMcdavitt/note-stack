@@ -1,7 +1,7 @@
 import { Button, Flex } from 'antd'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchNotebooks, createNotebook, INotebook, listNotebooks } from '../../redux/notebooksSlice'
+import { fetchNotebooks, INotebook, listNotebooks } from '../../redux/notebooksSlice'
 import { Dispatch } from '@reduxjs/toolkit'
 import Layout, { Content, Header } from 'antd/es/layout/layout'
 import NotebookCard from './NotebookCard'
@@ -17,17 +17,8 @@ const NoteStackMain = () => {
     dispatch(fetchNotebooks())
   }, [dispatch])
 
-  const showModal = () => {
+  const showNewNotebookModal = () => {
     setIsNewNotebookModalOpen(true)
-  }
-
-  const handleSave = (newNotebookTitle: string, newNotebookDescription: string) => {
-    dispatch(createNotebook({ title: newNotebookTitle, description: newNotebookDescription }))
-    setIsNewNotebookModalOpen(false)
-  }
-
-  const handleCancel = () => {
-    setIsNewNotebookModalOpen(false)
   }
 
   return (
@@ -46,7 +37,7 @@ const NoteStackMain = () => {
           }}
         >
           <h1>Notebooks</h1>
-          <Button onClick={showModal}>Add New</Button>
+          <Button onClick={showNewNotebookModal}>Add New</Button>
         </Header>
         <Content style={{ backgroundColor: '#fff', borderRadius: '15px', height: '85vh', padding: '20px' }}>
           <Flex wrap="wrap" gap={'middle'} justify="center">
@@ -56,7 +47,7 @@ const NoteStackMain = () => {
           </Flex>
         </Content>
       </Layout>
-      <AddNotebookModal isOpen={isNewNotebookModalOpen} onClose={handleCancel} onSave={handleSave} />
+      <AddNotebookModal isOpen={isNewNotebookModalOpen} setIsOpen={setIsNewNotebookModalOpen} />
     </>
   )
 }
