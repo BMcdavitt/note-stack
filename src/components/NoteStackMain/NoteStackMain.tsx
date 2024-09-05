@@ -1,31 +1,28 @@
 import { Button, Flex } from 'antd'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchNotebooks, INotebook, listNotebooks } from '../../redux/notebooksSlice'
+import { fetchNotebooks, createNotebook, INotebook, listNotebooks } from '../../redux/notebooksSlice'
 import { Dispatch } from '@reduxjs/toolkit'
 import Layout, { Content, Header } from 'antd/es/layout/layout'
-import { notebookApi } from '../../api/notebook'
 import NotebookCard from './NotebookCard'
 import AddNotebookModal from './AddNotebook'
 
 const NoteStackMain = () => {
   const [isNewNotebookModalOpen, setIsNewNotebookModalOpen] = useState(false)
-  const [newNotebookFlag, setNewNotebookFlag] = useState(0)
 
   const dispatch = useDispatch<Dispatch<any>>()
   const Notebooks = useSelector(listNotebooks)
 
   useEffect(() => {
     dispatch(fetchNotebooks())
-  }, [dispatch, newNotebookFlag])
+  }, [dispatch])
 
   const showModal = () => {
     setIsNewNotebookModalOpen(true)
   }
 
   const handleSave = (newNotebookTitle: string, newNotebookDescription: string) => {
-    notebookApi.createNotebook(newNotebookTitle, newNotebookDescription)
-    setNewNotebookFlag(newNotebookFlag + 1)
+    dispatch(createNotebook({ title: newNotebookTitle, description: newNotebookDescription }))
     setIsNewNotebookModalOpen(false)
   }
 

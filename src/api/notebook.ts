@@ -10,4 +10,8 @@ export const notebookApi = {
     const url = `${getNodeApiBaseUrl()}/notebook`
     return axios.post(url, { title, description })
   },
+  deleteNotebook(id: number) {
+    const url = `${getNodeApiBaseUrl()}/notebook/${id}`
+    return axios.delete(url)
+  },
 }
