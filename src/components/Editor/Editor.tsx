@@ -1,6 +1,12 @@
 //  Base Type Script Implementation courtesy of https://github.com/Sithija97/Lexical-rich-text-editor-typescript-
 
+import { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { Dispatch } from '@reduxjs/toolkit'
+
+import { $getRoot, EditorState } from 'lexical'
 import ExampleTheme from './themes/ExampleTheme'
+import './index.css'
 import { LexicalComposer } from '@lexical/react/LexicalComposer'
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin'
 import { ContentEditable } from '@lexical/react/LexicalContentEditable'
@@ -9,35 +15,31 @@ import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin'
 import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary'
 import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin'
 import { ListPlugin } from '@lexical/react/LexicalListPlugin'
-
 import { HeadingNode, QuoteNode } from '@lexical/rich-text'
 import { TableCellNode, TableNode, TableRowNode } from '@lexical/table'
 import { ListItemNode, ListNode } from '@lexical/list'
 import { CodeHighlightNode, CodeNode } from '@lexical/code'
 import { AutoLinkNode, LinkNode } from '@lexical/link'
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import ToolbarPlugin from './plugins/ToolbarPlugin'
 import AutoLinkPlugin from './plugins/AutoLinkPlugin'
-
-import './index.css'
-import { useState } from 'react'
 import OnChangePlugin from './plugins/OnChangePlugin'
-import { EditorState } from 'lexical'
+
+import { selectCurrentNote, selectCurrentNoteText } from '../../redux/currentNoteSlice'
+import { setCurrentNotebookChapterNotes } from '../../redux/currentNotebook'
+import { updateNotebookChapterText } from '../../api/notebookChapters'
 
 function Placeholder() {
   return <div className="editor-placeholder">Enter some text for this page...</div>
 }
 
 const editorConfig = {
-  // ***I can default a value into the editor this way on load
-  // editorState: localStorage.getItem('editorText'),
+  editorState: null,
   namespace: 'MyEditor',
-  // The editor theme
   theme: ExampleTheme,
-  // Handling of errors during update
   onError(error: any) {
     throw error
   },
-  // Any custom nodes go here
   nodes: [
     HeadingNode,
     ListNode,
@@ -53,21 +55,37 @@ const editorConfig = {
   ],
 }
 
-const Editor = () => {
-  const [editorState, setEditorState] = useState<string>()
+const EditorContent = () => {
+  const [editor] = useLexicalComposerContext()
 
-  function onChange(editorState: EditorState) {
-    const editorStateJSON = editorState.toJSON()
-    setEditorState(JSON.stringify(editorStateJSON))
-  }
+  const dispatch = useDispatch<Dispatch<any>>()
 
-  // *** Put into local storage
-  if (editorState) {
-    localStorage.setItem('editorText', editorState)
+  const noteId = useSelector(selectCurrentNote)
+  const noteText = useSelector(selectCurrentNoteText)
+
+  useEffect(() => {
+    if (noteText && noteText !== '{}') {
+      editor.update(() => {
+        const editorState = editor.parseEditorState(JSON.parse(noteText))
+        editor.setEditorState(editorState)
+      })
+    } else {
+      editor.update(() => {
+        $getRoot().clear()
+      })
+    }
+    return () => {}
+  }, [editor, noteText, dispatch])
+
+  function onChange(editorContent: EditorState) {
+    const editorStateJSON = editorContent.toJSON()
+    dispatch(setCurrentNotebookChapterNotes({ id: noteId, notes: JSON.stringify(editorStateJSON) }))
+    //  Is this happening too often? Should we debounce this?
+    noteId && updateNotebookChapterText(noteId, JSON.stringify(editorStateJSON))
   }
 
   return (
-    <LexicalComposer initialConfig={editorConfig}>
+    <div>
       <div className="editor-container">
         <ToolbarPlugin />
         <div className="editor-inner">
@@ -88,6 +106,14 @@ const Editor = () => {
         </div>
       </div>
       <OnChangePlugin onChange={onChange} />
+    </div>
+  )
+}
+
+const Editor = () => {
+  return (
+    <LexicalComposer initialConfig={editorConfig}>
+      <EditorContent />
     </LexicalComposer>
   )
 }

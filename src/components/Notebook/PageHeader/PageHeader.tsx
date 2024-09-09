@@ -1,22 +1,15 @@
-import { useParams } from 'react-router-dom'
-import { NotebooksData } from '../../data'
-import Card from 'antd/es/card/Card'
 import { Typography } from 'antd'
+import { useSelector } from 'react-redux'
+import { getNotebookById } from '../../../redux/notebooksSlice'
 
-const PageHeader = () => {
-  const { notebookId } = useParams()
+interface IPageHeader {
+  notebookId: string
+}
 
-  const foundNotebookData = NotebooksData.find((NotebookData) => {
-    return NotebookData.id === (notebookId && parseInt(notebookId))
-  })
+const PageHeader = ({ notebookId }: IPageHeader) => {
+  const notebookData = useSelector((state) => getNotebookById(state, parseInt(notebookId)))
 
-  console.log('foundNotebookData', foundNotebookData)
-
-  return (
-    // <Card style={{ margin: '10px 15px 0 15px', height: '10vh' }}>
-    <Typography>{`${foundNotebookData?.title} - ${foundNotebookData?.description}`}</Typography>
-    // </Card>
-  )
+  return <Typography>{`${notebookData?.title} - ${notebookData?.description}`}</Typography>
 }
 
 export default PageHeader

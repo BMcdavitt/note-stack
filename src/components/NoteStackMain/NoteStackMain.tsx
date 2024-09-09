@@ -1,32 +1,57 @@
-import { Card, Flex } from 'antd'
-import { useNavigate } from 'react-router-dom'
-import { NotebooksData } from '../data'
+import { Button, Flex } from 'antd'
+import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchNotebooks, INotebook, listNotebooks } from '../../redux/notebooksSlice'
+import { Dispatch } from '@reduxjs/toolkit'
+import Layout, { Content, Header } from 'antd/es/layout/layout'
+import NotebookCard from './NotebookCard'
+import AddNotebookModal from './AddNotebook'
+import { setCurrentNote, setCurrentNoteText } from '../../redux/currentNoteSlice'
 
 const NoteStackMain = () => {
-  const navigate = useNavigate()
-  const handleCardClick = (id: number) => {
-    navigate(`/notebook/${id}`)
+  const [isNewNotebookModalOpen, setIsNewNotebookModalOpen] = useState(false)
+
+  const dispatch = useDispatch<Dispatch<any>>()
+  const Notebooks = useSelector(listNotebooks)
+
+  useEffect(() => {
+    dispatch(fetchNotebooks())
+    dispatch(setCurrentNote(null))
+    dispatch(setCurrentNoteText([]))
+  }, [dispatch])
+
+  const showNewNotebookModal = () => {
+    setIsNewNotebookModalOpen(true)
   }
 
-  const Notebooks = NotebooksData
-
   return (
-    <Flex wrap="wrap" gap={'middle'} justify="center">
-      {Notebooks.map((notebook, index) => {
-        return (
-          <Card
-            title={notebook.title}
-            style={{ width: 500 }}
-            onClick={() => {
-              handleCardClick(notebook.id)
-            }}
-            key={index}
-          >
-            {notebook.description}
-          </Card>
-        )
-      })}
-    </Flex>
+    <>
+      <Layout style={{ padding: '10px', gap: '10px' }}>
+        <Header
+          style={{
+            backgroundColor: '#fff',
+            borderRadius: '15px',
+            height: '10vh',
+            padding: 0,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: '10px',
+          }}
+        >
+          <h1>Notebooks</h1>
+          <Button onClick={showNewNotebookModal}>Add New</Button>
+        </Header>
+        <Content style={{ backgroundColor: '#fff', borderRadius: '15px', height: '85vh', padding: '20px' }}>
+          <Flex wrap="wrap" gap={'middle'} justify="center">
+            {Notebooks.map((notebook: INotebook, index: number) => {
+              return <NotebookCard notebook={notebook} key={index} />
+            })}
+          </Flex>
+        </Content>
+      </Layout>
+      <AddNotebookModal isOpen={isNewNotebookModalOpen} setIsOpen={setIsNewNotebookModalOpen} />
+    </>
   )
 }
 

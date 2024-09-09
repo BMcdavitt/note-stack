@@ -1,13 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit'
+import { RootState } from './store'
 
-export interface ICurrentNoteSlice {
-  id: Number | null
-  text: {}
+interface ICurrentNoteState {
+  id: number | null
+  text: string | null
 }
 
-const initialState: ICurrentNoteSlice = {
+const initialState: ICurrentNoteState = {
   id: null,
-  text: {},
+  text: null,
 }
 
 const currentNoteSlice = createSlice({
@@ -15,11 +16,16 @@ const currentNoteSlice = createSlice({
   initialState,
   reducers: {
     setCurrentNote: (state, action) => {
-      state.id = action.payload.id
-      state.text = action.payload.text
+      state.id = action.payload
+    },
+    setCurrentNoteText: (state, action) => {
+      state.text = action.payload
     },
   },
 })
 
-export const { setCurrentNote } = currentNoteSlice.actions
+export const { setCurrentNote, setCurrentNoteText } = currentNoteSlice.actions
 export default currentNoteSlice.reducer
+
+export const selectCurrentNote = (state: RootState) => state.currentNote.id
+export const selectCurrentNoteText = (state: RootState) => state.currentNote.text

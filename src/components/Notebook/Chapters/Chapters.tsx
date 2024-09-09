@@ -1,62 +1,66 @@
-import { useParams } from 'react-router-dom'
-import { NotebookChapters, INotebookChapter } from '../../data'
 import Tree, { DataNode } from 'antd/es/tree'
-import { useDispatch } from 'react-redux'
-import { setCurrentNote } from '../../../redux/currentNoteSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { Dispatch } from '@reduxjs/toolkit'
+import { setCurrentNoteText, setCurrentNote } from '../../../redux/currentNoteSlice'
+import { getCurrentNotebookChapters, IChapter } from '../../../redux/currentNotebook'
 
 const Chapters = () => {
-  const dispatch = useDispatch()
+  const chapters = useSelector(getCurrentNotebookChapters)
+  const dispatch = useDispatch<Dispatch<any>>()
 
-  const getChaptersForNotebook = (notebookId?: number) => {
-    const chapters = NotebookChapters.filter((chapter) => chapter.notebookId === notebookId)
-    return chapters
-  }
+  function generateTreeChildNode(parentChapterId: number, parentNode: DataNode) {
+    parentNode.children = []
+    chapters
+      .filter((chapter: IChapter) => chapter.parentNotebookChapterId === parentChapterId)
+      .forEach((chapter: IChapter) => {
+        if (chapter) {
+          const node: DataNode = {
+            title: chapter.title,
+            key: `node-${chapter.id}`,
+          }
+          parentNode.children && parentNode.children.push(node)
 
-  const { notebookId } = useParams()
-
-  const Chapters = getChaptersForNotebook(notebookId ? parseInt(notebookId) : undefined)
-
-  // Function to generate tree data recursively
-
-  function generateTree(chapters: (INotebookChapter | undefined)[]) {
-    const nodes = []
-
-    for (const chapter of chapters) {
-      if (chapter) {
-        const node: DataNode = {
-          title: chapter.title,
-          key: `node-${chapter.id}`,
-        }
-
-        if (chapter.childChapters.length) {
-          const mappedChildChapters = chapter.childChapters.map((chapter) => {
-            return NotebookChapters.find((notebookChapter) => notebookChapter.id === chapter)
-          })
-
-          const childChapters = generateTree(mappedChildChapters)
-          if (childChapters.length) {
-            node.children = childChapters
+          if (chapters.some((c: IChapter) => c.parentNotebookChapterId === chapter.id)) {
+            generateTreeChildNode(chapter.id, node)
           }
         }
+      })
+  }
 
-        nodes.push(node)
-      }
-    }
+  function generateTree() {
+    const nodes: DataNode[] = []
 
+    chapters
+      .filter((chapter: IChapter) => chapter.parentNotebookChapterId === null)
+      .forEach((chapter: IChapter) => {
+        if (chapter) {
+          const node: DataNode = {
+            title: chapter.title,
+            key: `node-${chapter.id}`,
+          }
+          if (chapters.some((c: IChapter) => c.parentNotebookChapterId === chapter.id)) {
+            generateTreeChildNode(chapter.id, node)
+          }
+          nodes.push(node)
+        }
+      })
     return nodes
   }
 
-  // Call the function with the provided NotebookChapters
-  const chapterData: DataNode[] = generateTree(Chapters)
+  const chapterData: DataNode[] = generateTree()
 
   // TODO: Fix any
   const handleChapterSelect = (nodeKey: React.Key[], info: any) => {
-    const currentChapter = parseInt(info.node.key.split('-')[1])
-    const chapterData = NotebookChapters.find((chapter) => {
-      return chapter.id === currentChapter
-    })
+    const chapter = parseInt(info.node.key.split('-')[1])
+    dispatch(setCurrentNote(chapter))
+    let chapterNotes = chapters.find((ch: IChapter) => ch.id === chapter)?.notes
 
-    dispatch(setCurrentNote({ id: currentChapter, text: chapterData?.notes || {} }))
+    if (!chapterNotes) {
+      // use of chapter in chapterNotes string is strictly to ensure a state change is detected so that the editor is re-rendered
+      // TODO: Verify if this is the best approach
+      chapterNotes = `{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1}],"direction":null,"format":"","indent":0,"type":"root","version":${chapter}}}`
+    }
+    dispatch(setCurrentNoteText(chapterNotes))
   }
   return (
     <Tree
