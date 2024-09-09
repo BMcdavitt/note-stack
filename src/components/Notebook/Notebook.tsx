@@ -9,6 +9,7 @@ import { fetchNotebookChapters, setCurrentNotebookId } from '../../redux/current
 import { Dispatch } from '@reduxjs/toolkit'
 import { selectCurrentNote } from '../../redux/currentNoteSlice'
 import NoNoteSelected from './NoNoteSelected/NoNoteSelected'
+import ChapterToolbar from './ChapterToolbar/ChapterToolbar'
 
 const { Header, Sider, Content } = Layout
 
@@ -30,7 +31,14 @@ const Notebook = () => {
         {notebookId && <PageHeader notebookId={notebookId} />}
       </Header>
       <Layout style={{ paddingTop: '10px' }}>
-        <Sider style={{ borderRadius: '15px', marginRight: '10px' }}>
+        <Sider
+          style={{
+            borderRadius: '10px',
+            marginRight: '10px',
+            backgroundColor: '#fff',
+          }}
+        >
+          <ChapterToolbar />
           <Chapters />
         </Sider>
 

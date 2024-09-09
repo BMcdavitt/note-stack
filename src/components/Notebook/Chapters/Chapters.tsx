@@ -65,7 +65,7 @@ const Chapters = () => {
   return (
     <Tree
       treeData={chapterData}
-      style={{ minHeight: '87vh' }}
+      style={{ minHeight: '80vh' }}
       onSelect={(nodeKey, info) => {
         handleChapterSelect(nodeKey, info)
       }}
