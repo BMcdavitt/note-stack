@@ -62,6 +62,23 @@ export const createNotebook = createAsyncThunk<
   }
 })
 
+export const editNotebook = createAsyncThunk<
+  { data: INotebook[] },
+  { id: number; title: string; description: string },
+  { state: any }
+>('notebooks/editNotebook', async ({ id, title, description }, thunkAPI) => {
+  try {
+    const response = await notebookApi.editNotebook(id, title, description)
+
+    await thunkAPI.dispatch(fetchNotebooks())
+
+    return { data: response.data } as { data: INotebook[] }
+  } catch (error) {
+    console.error('error', error)
+    throw error
+  }
+})
+
 const currentNotebooksSlice = createSlice({
   name: 'notebooks',
   initialState,

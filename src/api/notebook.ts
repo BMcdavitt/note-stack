@@ -14,4 +14,8 @@ export const notebookApi = {
     const url = `${getNodeApiBaseUrl()}/notebook/${id}`
     return axios.delete(url)
   },
+  editNotebook(id: number, title: string, description: string) {
+    const url = `${getNodeApiBaseUrl()}/notebook/${id}`
+    return axios.put(url, { title, description })
+  },
 }

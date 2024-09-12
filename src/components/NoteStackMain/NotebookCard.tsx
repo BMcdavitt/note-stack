@@ -4,17 +4,23 @@ import { deleteNotebook, INotebook } from '../../redux/notebooksSlice'
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
 import { useDispatch } from 'react-redux'
 
-const NotebookCard = ({ notebook }: { notebook: INotebook }) => {
+const NotebookCard = ({
+  notebook,
+  callEditNotebook,
+}: {
+  notebook: INotebook
+  callEditNotebook: (editNotebookId: number) => void
+}) => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
+
   const handleCardClick = (id: number) => {
     navigate(`/notebook/${id}`)
   }
 
   const editNotebook = (event: React.MouseEvent) => {
     event.stopPropagation()
-    const id = notebook.id
-    console.log('edit notebook', id)
+    callEditNotebook(notebook.id)
   }
 
   const deleteNotebookConfirmation = (): Promise<boolean> => {
@@ -55,7 +61,7 @@ const NotebookCard = ({ notebook }: { notebook: INotebook }) => {
       <Flex vertical>
         {notebook.description}
         <Flex justify="end" gap={'10px'}>
-          {/* <Button shape="circle" icon={<EditOutlined />} onClick={editNotebook} /> */}
+          <Button shape="circle" icon={<EditOutlined />} onClick={editNotebook} />
           <Button shape="circle" icon={<DeleteOutlined />} onClick={callDeleteNotebook} />
         </Flex>
       </Flex>
