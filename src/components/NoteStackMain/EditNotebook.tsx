@@ -23,7 +23,6 @@ const EditNotebookModal = ({ isOpen, setIsOpen, notebookId }: IEditNotebookModal
   }, [notebookData])
 
   const handleSaveNotebook = (notebookTitle: string, notebookDescription: string) => {
-    // TODO: Save the notebook
     dispatch(editNotebook({ id: notebookId, title: notebookTitle, description: notebookDescription }) as any)
     setIsOpen(false)
   }
